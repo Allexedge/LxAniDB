@@ -158,10 +158,12 @@ namespace LxAniDB_WPF
 
         private void btnAddFiles_Click(object sender, RoutedEventArgs e)
         {
+            string filterString = string.Join("; ", AcceptedFileExtensions.Select(ext => $"*.{ext}"));
+
             OpenFileDialog dlg = new OpenFileDialog
             {
                 Multiselect = true,
-                Filter = "Video Files (*.mkv, *.mp4, *.avi) | *.mkv; *.mp4; *.avi",
+                Filter = $"Video Files ({filterString.Replace(';', ',')}) | {filterString}",
                 Title = "Select files..."
             };
 
@@ -543,7 +545,8 @@ namespace LxAniDB_WPF
                 foreach (string file in dropFiles)
                 {
                     string ext = Path.GetExtension(file);
-                    if (ext == ".mkv" || ext == ".avi" || ext == ".mp4")
+                    ext = string.IsNullOrEmpty(ext) ? ext : ext.Substring(1);
+                    if (AcceptedFileExtensions.Contains(ext))
                     {
                         FileItem f = new FileItem { FilePath = Path.GetFullPath(file) };
                         if (!CheckHistory(f.FileName) && !CheckFileList(f.FileName))
@@ -575,6 +578,39 @@ namespace LxAniDB_WPF
         private void msgLog_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
             msgLog.ScrollToEnd();
+        }
+
+        private void btnAddDirectory_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.FolderBrowserDialog dlg = new System.Windows.Forms.FolderBrowserDialog();
+
+            if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string[] allFiles = AcceptedFileExtensions.
+                    SelectMany(ext => Directory.GetFiles(dlg.SelectedPath, $"*.{ext}", SearchOption.AllDirectories)).ToArray();
+
+                foreach (string file in allFiles)
+                {
+                    FileItem f = new FileItem { FilePath = Path.GetFullPath(file) };
+                    if (!CheckHistory(f.FileName) && !CheckFileList(f.FileName))
+                    {
+                        files.Add(f);
+                    }
+                }
+            }
+        }
+
+        private string[] AcceptedFileExtensions
+        {
+            get
+            {
+                string[] result = new string[Properties.Settings.Default.acceptedExtensions.Count];
+                for (int i = 0; i < result.Length; i++)
+                {
+                    result[i] = Properties.Settings.Default.acceptedExtensions[i];
+                }
+                return result;
+            }
         }
     }
 }
