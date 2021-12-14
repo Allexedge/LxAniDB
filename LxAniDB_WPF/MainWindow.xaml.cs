@@ -88,6 +88,34 @@ namespace LxAniDB_WPF
             get { return files; }
         }
 
+        private int _currentFile = 0;
+        public int CurrentFile 
+        {
+            get { return _currentFile; }
+            set
+            {
+                if (value != _currentFile)
+                {
+                    _currentFile = value;
+                    RaisePropertyChanged(nameof(CurrentFile));
+                }
+            } 
+        }
+
+        private int _totalFiles = 0;
+        public int TotalFiles
+        {
+            get { return _totalFiles; }
+            set
+            {
+                if (value != _totalFiles)
+                {
+                    _totalFiles = value;
+                    RaisePropertyChanged(nameof(TotalFiles));
+                }
+            }
+        }
+
         public bool WatchedChecked
         {
             get { return watchedChecked; }
@@ -179,6 +207,7 @@ namespace LxAniDB_WPF
                         files.Add(f);
                     }
                 }
+                TotalFiles = files.Count;
             }
         }
 
@@ -220,7 +249,6 @@ namespace LxAniDB_WPF
             this.btnAddDirectory.IsEnabled = false;
             this.btnClear.IsEnabled = false;
             this.checkWatched.IsEnabled = false;
-            this.checkDeleteFiles.IsEnabled = false;
             this.comboBox.IsEnabled = false;
             this.btnSettings.IsEnabled = false;
             this.btnHistory.IsEnabled = false;
@@ -251,7 +279,6 @@ namespace LxAniDB_WPF
             this.btnAddDirectory.IsEnabled = true;
             this.btnClear.IsEnabled = true;
             this.checkWatched.IsEnabled = true;
-            this.checkDeleteFiles.IsEnabled = true;
             this.comboBox.IsEnabled = true;
             this.btnHistory.IsEnabled = true;
             this.btnSettings.IsEnabled = true;
@@ -262,8 +289,10 @@ namespace LxAniDB_WPF
 
         private void DoWork(CancellationToken token, IProgress<int> progress, string viewed, bool deleteFile, int state)
         {
+            uiContext.Post((x) => TotalProgressBar.Value = 0, null);
             foreach (FileItem file in files.ToList())
             {
+                CurrentFile++;
                 if (token.IsCancellationRequested)
                 {
                     WriteLog("CANCELLED");
@@ -319,15 +348,16 @@ namespace LxAniDB_WPF
                 uiContext.Post(x => files.Remove(file), null);
                 WriteLog($"HASHED {file.FileName}");
                 WriteLog($"ED2K HASH: {finalHash}");
-                if (LoginSendPacket($"MYLISTADD size={size}&ed2k={finalHash}&state={state}&viewed={viewed}"))
-                {
-                    uiContext.Post(x => AddToHistory(file.FileName), null);
-                    if (deleteFile)
-                    {
-                        File.Delete(file.FilePath);
-                        WriteLog("FILE DELETED");
-                    }
-                }
+                //if (LoginSendPacket($"MYLISTADD size={size}&ed2k={finalHash}&state={state}&viewed={viewed}"))
+                //{
+                //    uiContext.Post(x => AddToHistory(file.FileName), null);
+                //    if (deleteFile)
+                //    {
+                //        File.Delete(file.FilePath);
+                //        WriteLog("FILE DELETED");
+                //    }
+                //}
+                uiContext.Post((x)=>TotalProgressBar.Value = ((double)CurrentFile / TotalFiles)*100, null);
             }
         }
 
@@ -557,6 +587,7 @@ namespace LxAniDB_WPF
                         }
                     }
                 }
+                TotalFiles = files.Count;
             }
         }
 
@@ -599,6 +630,7 @@ namespace LxAniDB_WPF
                         files.Add(f);
                     }
                 }
+                TotalFiles = files.Count;
             }
         }
 
