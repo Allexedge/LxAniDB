@@ -217,6 +217,7 @@ namespace LxAniDB_WPF
         private async void StartWork()
         {
             this.btnAddFiles.IsEnabled = false;
+            this.btnAddDirectory.IsEnabled = false;
             this.btnClear.IsEnabled = false;
             this.checkWatched.IsEnabled = false;
             this.checkDeleteFiles.IsEnabled = false;
@@ -247,6 +248,7 @@ namespace LxAniDB_WPF
             }
             this.files.Clear();
             this.btnAddFiles.IsEnabled = true;
+            this.btnAddDirectory.IsEnabled = true;
             this.btnClear.IsEnabled = true;
             this.checkWatched.IsEnabled = true;
             this.checkDeleteFiles.IsEnabled = true;
