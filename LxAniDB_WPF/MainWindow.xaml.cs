@@ -348,15 +348,15 @@ namespace LxAniDB_WPF
                 uiContext.Post(x => files.Remove(file), null);
                 WriteLog($"HASHED {file.FileName}");
                 WriteLog($"ED2K HASH: {finalHash}");
-                //if (LoginSendPacket($"MYLISTADD size={size}&ed2k={finalHash}&state={state}&viewed={viewed}"))
-                //{
-                //    uiContext.Post(x => AddToHistory(file.FileName), null);
-                //    if (deleteFile)
-                //    {
-                //        File.Delete(file.FilePath);
-                //        WriteLog("FILE DELETED");
-                //    }
-                //}
+                if (LoginSendPacket($"MYLISTADD size={size}&ed2k={finalHash}&state={state}&viewed={viewed}"))
+                {
+                    uiContext.Post(x => AddToHistory(file.FileName), null);
+                    if (deleteFile)
+                    {
+                        File.Delete(file.FilePath);
+                        WriteLog("FILE DELETED");
+                    }
+                }
                 uiContext.Post((x)=>TotalProgressBar.Value = ((double)CurrentFile / TotalFiles)*100, null);
             }
         }
