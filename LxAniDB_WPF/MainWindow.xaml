@@ -4,60 +4,101 @@
         Title="LxAniDB v0.37" Loaded="Window_Loaded" Closing="Window_Closing" Icon="icon.ico" DataContext="{Binding RelativeSource={RelativeSource Self}}" MinWidth="700" MinHeight="480" Height="638.698" SizeToContent="WidthAndHeight">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="88*" MinHeight="100"/>
-            <RowDefinition Height="115*" MinHeight="100"/>
+            <RowDefinition Height="*" MinHeight="250"/>
+            <RowDefinition Height="60" MinHeight="60"/>
+            <RowDefinition Height="*" MinHeight="250"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="77*" MinWidth="600"/>
-            <ColumnDefinition Width="18*" MaxWidth="100"/>
-        </Grid.ColumnDefinitions>
-        <Menu x:Name="menu" Height="24" VerticalAlignment="Top" Grid.ColumnSpan="2">
+        <Menu x:Name="menu" Height="24" VerticalAlignment="Top">
             <MenuItem x:Name="btnSettings" Header="Settings" Margin="0" Click="btnSettings_Click"/>
             <MenuItem x:Name="btnHistory" Header="History" Margin="0" Click="btnHistory_Click"/>
         </Menu>
-        <ListBox x:Name="listBox" HorizontalAlignment="Left" Margin="10,56,0,0" VerticalAlignment="Top" AllowDrop="True" Drop="listBox_Drop" ItemsSource="{Binding Files}" DisplayMemberPath="FileName" Grid.Row="0" Grid.Column="0" MinWidth="600" MinHeight="200" Height="200" Width="600"/>
-        <Label x:Name="label" Content="Files:" HorizontalAlignment="Left" Margin="10,34,0,0" VerticalAlignment="Top" Padding="5,0" Height="16" Width="36"/>
-        <Button x:Name="btnHash" Content="Start Hashing" Margin="10,30,0,0" VerticalAlignment="Top" Width="87" HorizontalAlignment="Left" Click="btnHash_Click" Style="{DynamicResource RoundedButton}" BorderBrush="#95FFFFFF" Height="24" Grid.Column="1" Grid.Row="0">
-            <Button.Background>
-                <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                    <GradientStop Color="#FFC9C1C1" Offset="0.967"/>
-                    <GradientStop Color="#FFF0F0F0" Offset="0.829"/>
-                </LinearGradientBrush>
-            </Button.Background>
-        </Button>
-        <Button x:Name="btnAddFiles" Content="Add Files" Margin="10,58,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="87" Click="btnAddFiles_Click" Style="{DynamicResource RoundedButton}" BorderBrush="#95FFFFFF" Height="24" Grid.Column="1" Grid.Row="0">
-            <Button.Background>
-                <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                    <GradientStop Color="#FFC9C1C1" Offset="0.967"/>
-                    <GradientStop Color="#FFF0F0F0" Offset="0.829"/>
-                </LinearGradientBrush>
-            </Button.Background>
-        </Button>
-        <Button x:Name="btnClear" Content="Clear List" Margin="10,114,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="87" Click="btnClear_Click" Style="{DynamicResource RoundedButton}" BorderBrush="#95FFFFFF" Height="24" Grid.Column="1" Grid.Row="0">
-            <Button.Background>
-                <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                    <GradientStop Color="#FFC9C1C1" Offset="0.967"/>
-                    <GradientStop Color="#FFF0F0F0" Offset="0.829"/>
-                </LinearGradientBrush>
-            </Button.Background>
-        </Button>
-        <CheckBox x:Name="checkWatched" Content="Watched" HorizontalAlignment="Left" Margin="10,142,0,0" VerticalAlignment="Top" IsChecked="{Binding WatchedChecked}" Grid.Column="1"  Grid.Row="0" Height="16" Width="64"/>
-        <ProgressBar x:Name="progressBar" HorizontalAlignment="Left" Height="21" Margin="95,5,0,0" VerticalAlignment="Top" Value="100" Grid.Row="1" Grid.Column="0" MinWidth="560" Width="641" Grid.ColumnSpan="2" Style="{DynamicResource ProgressBarStyle1}" />
-        <Label x:Name="label1" Content="Log:" HorizontalAlignment="Left" Margin="10,110,0,0" VerticalAlignment="Top" Height="20" Padding="5,0" Width="32" Grid.Row="1" RenderTransformOrigin="0.443,-14.913"/>
-        <TextBox x:Name="msgLog" HorizontalAlignment="Left" Margin="10,135,0,0" VerticalAlignment="Top" IsReadOnly="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Text="{Binding LogText, Mode=OneWay}" TextChanged="msgLog_TextChanged" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" MinWidth="600" MinHeight="200" Width="736" Height="200"/>
-        <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="10,178,0,0" VerticalAlignment="Top" Width="87" SelectedValue="{Binding SelectedState}" ItemsSource="{Binding FileStates}" SelectedValuePath="Key" DisplayMemberPath="Value" Grid.Column="1" Height="22" SelectedIndex="1"/>
-        <Button x:Name="btnAddDirectory" Content="Add Directory" HorizontalAlignment="Left" Margin="10,87,0,0" VerticalAlignment="Top" Width="87" Style="{DynamicResource RoundedButton}" BorderBrush="#95FFFFFF" Height="24" Click="btnAddDirectory_Click" Grid.Column="1" Grid.Row="0">
-            <Button.Background>
-                <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
-                    <GradientStop Color="#FFC9C1C1" Offset="0.967"/>
-                    <GradientStop Color="#FFF0F0F0" Offset="0.829"/>
-                </LinearGradientBrush>
-            </Button.Background>
-        </Button>
+        <Grid x:Name="FilesGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="100" MinWidth="100" MaxWidth="100"/>
+            </Grid.ColumnDefinitions>
+            <Label x:Name="labelFiles" Content="Files:" HorizontalAlignment="Left" Margin="0,29,0,0" VerticalAlignment="Top" Padding="5,0" Height="16" Width="36"/>
+            <ListBox x:Name="listBox" 
+                     HorizontalAlignment="Stretch"
+                     VerticalAlignment="Stretch"
+                     Margin="10,56,0,0" 
+                     AllowDrop="True" 
+                     Drop="listBox_Drop" 
+                     ItemsSource="{Binding Files}" 
+                     DisplayMemberPath="FileName" 
+                     MinWidth="600" 
+                     MinHeight="200"/>
+
+            <Button x:Name="btnHash" Content="Start Hashing" Margin="10,59,0,0" VerticalAlignment="Top" Width="87" HorizontalAlignment="Left" Click="btnHash_Click" Style="{DynamicResource RoundedButton}" BorderBrush="#95FFFFFF" Height="24" Grid.Column="1" Grid.Row="0">
+                <Button.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                        <GradientStop Color="#FFC9C1C1" Offset="0.967"/>
+                        <GradientStop Color="#FFF0F0F0" Offset="0.829"/>
+                    </LinearGradientBrush>
+                </Button.Background>
+            </Button>
+            <Button x:Name="btnAddFiles" Content="Add Files" Margin="10,87,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="87" Click="btnAddFiles_Click" Style="{DynamicResource RoundedButton}" BorderBrush="#95FFFFFF" Height="24" Grid.Column="1" Grid.Row="0">
+                <Button.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                        <GradientStop Color="#FFC9C1C1" Offset="0.967"/>
+                        <GradientStop Color="#FFF0F0F0" Offset="0.829"/>
+                    </LinearGradientBrush>
+                </Button.Background>
+            </Button>
+            <Button x:Name="btnClear" Content="Clear List" Margin="10,143,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="87" Click="btnClear_Click" Style="{DynamicResource RoundedButton}" BorderBrush="#95FFFFFF" Height="24" Grid.Column="1" Grid.Row="0">
+                <Button.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                        <GradientStop Color="#FFC9C1C1" Offset="0.967"/>
+                        <GradientStop Color="#FFF0F0F0" Offset="0.829"/>
+                    </LinearGradientBrush>
+                </Button.Background>
+            </Button>
+            <CheckBox x:Name="checkWatched" Content="Watched" HorizontalAlignment="Left" Margin="10,171,0,0" VerticalAlignment="Top" IsChecked="{Binding WatchedChecked}" Grid.Column="1"  Grid.Row="0" Height="16" Width="72"/>
+            <ComboBox x:Name="comboBox" HorizontalAlignment="Left" Margin="10,207,0,0" VerticalAlignment="Top" Width="87" SelectedValue="{Binding SelectedState}" ItemsSource="{Binding FileStates}" SelectedValuePath="Key" DisplayMemberPath="Value" Grid.Column="1" Height="22" SelectedIndex="1"/>
+            <Button x:Name="btnAddDirectory" Content="Add Directory" HorizontalAlignment="Left" Margin="10,116,0,0" VerticalAlignment="Top" Width="87" Style="{DynamicResource RoundedButton}" BorderBrush="#95FFFFFF" Height="24" Click="btnAddDirectory_Click" Grid.Column="1" Grid.Row="0">
+                <Button.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                        <GradientStop Color="#FFC9C1C1" Offset="0.967"/>
+                        <GradientStop Color="#FFF0F0F0" Offset="0.829"/>
+                    </LinearGradientBrush>
+                </Button.Background>
+            </Button>
+        </Grid>
+
+
+        <ProgressBar x:Name="progressBar" HorizontalAlignment="Left" Height="21" Margin="120,5,0,0" VerticalAlignment="Top" Value="100" Grid.Row="1" MinWidth="560" Width="616" Style="{DynamicResource ProgressBarStyle1}" />
         <Label x:Name="label2" Content="Current file:" HorizontalAlignment="Left" Margin="14,6,0,0" VerticalAlignment="Top" Height="20" Padding="5,0" Width="76" Grid.Row="1" RenderTransformOrigin="0.443,-14.913"/>
-        <ProgressBar x:Name="TotalProgressBar" HorizontalAlignment="Left" Height="21" Margin="95,31,0,0" VerticalAlignment="Top" Value="100" Grid.Row="1" Grid.Column="0" MinWidth="560" Width="641" Grid.ColumnSpan="2" Style="{DynamicResource ProgressBarStyle1}" />
-        <Label x:Name="label3" Content="of" HorizontalAlignment="Left" Margin="38,26,0,0" Grid.Row="1" VerticalAlignment="Top" Height="26"/>
-        <Label x:Name="label4" Content="{Binding TotalFiles}" HorizontalAlignment="Left" Margin="65,26,0,0" Grid.Row="1" VerticalAlignment="Top" Height="26" Width="16"/>
-        <Label x:Name="label5" Content="{Binding CurrentFile}" HorizontalAlignment="Left" Margin="14,26,0,0" Grid.Row="1" VerticalAlignment="Top" Height="26" Width="19" RenderTransformOrigin="0.526,-0.667"/>
+        <ProgressBar x:Name="TotalProgressBar" HorizontalAlignment="Left" Height="21" Margin="120,31,0,0" VerticalAlignment="Top" Value="100" Grid.Row="1" MinWidth="560" Width="616" Style="{DynamicResource ProgressBarStyle1}" />
+        <Label x:Name="label3" HorizontalAlignment="Left" Margin="14,31,0,0" Grid.Row="1" VerticalAlignment="Top" Height="26" Width="101" RenderTransformOrigin="0.526,-0.667">
+            <Label.Content>
+                <TextBlock IsEnabled="False">
+                    <TextBlock.Text>
+                        <MultiBinding StringFormat="{}{0} of {1}">
+                            <Binding Path="CurrentFile"></Binding>
+                            <Binding Path="TotalFiles"></Binding>
+                        </MultiBinding>
+                    </TextBlock.Text>
+                </TextBlock>
+            </Label.Content>
+        </Label>
+
+        <Label x:Name="label1" Content="Log:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="20" Padding="5,0" Width="32" Grid.Row="2" RenderTransformOrigin="0.443,-14.913"/>
+        <TextBox x:Name="msgLog" 
+                 HorizontalAlignment="Stretch" 
+                 Margin="10,35,10,10" 
+                 VerticalAlignment="Stretch" 
+                 IsReadOnly="True" 
+                 VerticalScrollBarVisibility="Auto" 
+                 HorizontalScrollBarVisibility="Auto" 
+                 Text="{Binding LogText, Mode=OneWay}" 
+                 TextChanged="msgLog_TextChanged" 
+                 Grid.Row="2" 
+                 MinWidth="600" 
+                 MinHeight="200" 
+                 />
+
     </Grid>
 </Window>

@@ -125,7 +125,7 @@ namespace LxAniDB_WPF
                 {
                     watchedChecked = value;
                     Properties.Settings.Default.watchedChecked = value;
-                    RaisePropertyChanged("WatchedChecked");
+                    RaisePropertyChanged(nameof(WatchedChecked));
                 }
             }
         }
@@ -139,7 +139,7 @@ namespace LxAniDB_WPF
                 {
                     deleteChecked = value;
                     Properties.Settings.Default.deleteChecked = value;
-                    RaisePropertyChanged("DeleteChecked");
+                    RaisePropertyChanged(nameof(DeleteChecked));
                 }
             }
         }
@@ -153,7 +153,7 @@ namespace LxAniDB_WPF
                 {
                     selectedState = value;
                     Properties.Settings.Default.selectedState = value;
-                    RaisePropertyChanged("SelectedState");
+                    RaisePropertyChanged(nameof(SelectedState));
                 }
             }
         }
