@@ -31,6 +31,7 @@ namespace LxAniDB_WPF
         private bool working = false;
         private bool watchedChecked;
         private bool deleteChecked;
+        private bool editChecked;
         private int selectedState;
 
         private static StringBuilder logText = new StringBuilder();
@@ -54,6 +55,7 @@ namespace LxAniDB_WPF
             logoutTimer.Interval = new TimeSpan(0, 20, 0);
             WatchedChecked = Properties.Settings.Default.watchedChecked;
             DeleteChecked = Properties.Settings.Default.deleteChecked;
+            EditChecked = Properties.Settings.Default.editChecked;
             SelectedState = Properties.Settings.Default.selectedState;
             ReadHistory();
         }
@@ -126,6 +128,20 @@ namespace LxAniDB_WPF
                     watchedChecked = value;
                     Properties.Settings.Default.watchedChecked = value;
                     RaisePropertyChanged(nameof(WatchedChecked));
+                }
+            }
+        }
+
+        public bool EditChecked
+        {
+            get { return editChecked; }
+            set
+            {
+                if (value != editChecked)
+                {
+                    editChecked = value;
+                    Properties.Settings.Default.editChecked = value;
+                    RaisePropertyChanged(nameof(EditChecked));
                 }
             }
         }
@@ -249,6 +265,7 @@ namespace LxAniDB_WPF
             this.btnAddDirectory.IsEnabled = false;
             this.btnClear.IsEnabled = false;
             this.checkWatched.IsEnabled = false;
+            this.checkEdit.IsEnabled = false;
             this.comboBox.IsEnabled = false;
             this.btnSettings.IsEnabled = false;
             this.btnHistory.IsEnabled = false;
@@ -279,6 +296,7 @@ namespace LxAniDB_WPF
             this.btnAddDirectory.IsEnabled = true;
             this.btnClear.IsEnabled = true;
             this.checkWatched.IsEnabled = true;
+            this.checkEdit.IsEnabled = true;
             this.comboBox.IsEnabled = true;
             this.btnHistory.IsEnabled = true;
             this.btnSettings.IsEnabled = true;
@@ -290,6 +308,8 @@ namespace LxAniDB_WPF
         private void DoWork(CancellationToken token, IProgress<int> progress, string viewed, bool deleteFile, int state)
         {
             uiContext.Post((x) => TotalProgressBar.Value = 0, null);
+            int edit = EditChecked ? 1 : 0;
+            CurrentFile = 0;
             foreach (FileItem file in files.ToList())
             {
                 CurrentFile++;
@@ -348,7 +368,7 @@ namespace LxAniDB_WPF
                 uiContext.Post(x => files.Remove(file), null);
                 WriteLog($"HASHED {file.FileName}");
                 WriteLog($"ED2K HASH: {finalHash}");
-                if (LoginSendPacket($"MYLISTADD size={size}&ed2k={finalHash}&state={state}&viewed={viewed}"))
+                if (LoginSendPacket($"MYLISTADD size={size}&ed2k={finalHash}&state={state}&viewed={viewed}&edit={edit}"))
                 {
                     uiContext.Post(x => AddToHistory(file.FileName), null);
                     if (deleteFile)
@@ -357,7 +377,7 @@ namespace LxAniDB_WPF
                         WriteLog("FILE DELETED");
                     }
                 }
-                uiContext.Post((x)=>TotalProgressBar.Value = ((double)CurrentFile / TotalFiles)*100, null);
+                uiContext.Post((x) => TotalProgressBar.Value = (double)CurrentFile / TotalFiles * 100, null);
             }
         }
 
@@ -526,7 +546,7 @@ namespace LxAniDB_WPF
             string time = DateTime.Now.ToString("HH:mm:ss");
             msg = msg.Replace("\n", " ");
             logText.AppendLine($"<{time}>{msg}");
-            RaisePropertyChanged("LogText");
+            RaisePropertyChanged(nameof(LogText));
         }
 
         private void btnHistory_Click(object sender, RoutedEventArgs e)
@@ -538,23 +558,23 @@ namespace LxAniDB_WPF
 
         private void ReadHistory()
         {
-            if (!File.Exists(Path.Combine((Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)), @"Luch\LxAniDB\History.xml")))
+            if (!File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Luch\LxAniDB\History.xml")))
                 return;
 
             XmlSerializer serializer = new XmlSerializer(typeof(BindingList<string>));
-            StreamReader reader = new StreamReader(Path.Combine((Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)), @"Luch\LxAniDB\History.xml"));
+            StreamReader reader = new StreamReader(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Luch\LxAniDB\History.xml"));
             history = (BindingList<string>)serializer.Deserialize(reader);
             reader.Close();
         }
 
         private void SaveHistory()
         {
-            if (!Directory.Exists(Path.Combine((Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)), @"Luch\LxAniDB")))
+            if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Luch\LxAniDB")))
             {
-                Directory.CreateDirectory(Path.Combine((Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)), @"Luch\LxAniDB"));
+                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Luch\LxAniDB"));
             }
             XmlSerializer serializer = new XmlSerializer(typeof(BindingList<string>));
-            TextWriter writer = new StreamWriter(Path.Combine((Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)), @"Luch\LxAniDB\History.xml"));
+            TextWriter writer = new StreamWriter(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Luch\LxAniDB\History.xml"));
             serializer.Serialize(writer, history);
         }
 
